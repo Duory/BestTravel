@@ -1,7 +1,8 @@
 package makov.besttravel.application
 
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(R.layout.activity_main)
