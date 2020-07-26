@@ -50,6 +50,9 @@ dependencies {
     implementation "androidx.core:core-ktx:$versions.core_ktx"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
 
+    // Material
+    implementation "com.google.android.material:material:$versions.material"
+
     // Maps
     implementation "com.google.android.gms:play-services-maps:$versions.play_services_maps"
 
@@ -68,4 +71,8 @@ dependencies {
     //    Retrofit
     implementation "com.squareup.retrofit2:retrofit:$versions.retrofit"
     implementation "com.squareup.retrofit2:converter-gson:$versions.retrofit"
+
+    // Toothpick (Дагер оверкил, Хилт ещё не освоил)
+    implementation "com.github.stephanenicolas.toothpick:ktp:$versions.toothpick"
+    kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:$versions.toothpick"
 }
