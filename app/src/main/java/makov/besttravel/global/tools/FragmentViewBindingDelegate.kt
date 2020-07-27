@@ -1,4 +1,4 @@
-package makov.besttravel.application
+package makov.besttravel.global.tools
 
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -37,5 +37,8 @@ class FragmentViewBindingDelegate<T>(
 }
 
 fun <T> Fragment.viewBinding(bindingProvider: (View) -> T): ReadOnlyProperty<Any, T> {
-    return FragmentViewBindingDelegate(this, bindingProvider)
+    return FragmentViewBindingDelegate(
+        this,
+        bindingProvider
+    )
 }

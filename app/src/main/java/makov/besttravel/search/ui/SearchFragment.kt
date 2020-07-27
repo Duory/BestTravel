@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
-import makov.besttravel.application.viewBinding
+import makov.besttravel.global.tools.viewBinding
 import makov.besttravel.databinding.FragmentSearchBinding
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
