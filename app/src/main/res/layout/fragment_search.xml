@@ -4,6 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="@string/search_screen_title" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/fromLayout"
         android:layout_width="0dp"
@@ -11,14 +18,16 @@
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
         <AutoCompleteTextView
             android:id="@+id/from"
             style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Откуда" />
+            android:hint="@string/search_from"
+            android:imeOptions="actionNext|flagNoExtractUi"
+            android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -36,7 +45,9 @@
             style="@style/Widget.MaterialComponents.AutoCompleteTextView.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Куда" />
+            android:hint="@string/search_to"
+            android:imeOptions="actionDone|flagNoExtractUi"
+            android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -44,8 +55,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:text="Найти билеты"
+        android:text="@string/search_action"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toLayout"
+        app:layout_constraintVertical_bias="1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

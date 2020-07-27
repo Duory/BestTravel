@@ -2,6 +2,8 @@ package makov.besttravel.search.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.StringRes
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
 import makov.besttravel.databinding.FragmentSearchBinding
@@ -45,5 +47,10 @@ class SearchFragment : MvpAppCompatFragment(R.layout.fragment_search), SearchVie
 
     override fun showToSuggestions(suggestions: List<City>) {
         toAdapter.submitData(suggestions)
+    }
+
+    override fun showError(@StringRes stringRes: Int) {
+        Snackbar.make(requireView(), stringRes, Snackbar.LENGTH_LONG)
+            .show()
     }
 }

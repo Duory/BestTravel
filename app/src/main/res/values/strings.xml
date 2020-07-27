@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">BestTravel</string>
-    <string name="title_activity_maps">Map</string>
+
+    <string name="error_default_msg">Нет доступа к сервису, попробуйте позже.</string>
+    <string name="search_from">Откуда</string>
+    <string name="search_to">Куда</string>
+    <string name="search_action">Найти билеты</string>
+    <string name="search_screen_title">Поиск авиабилетов</string>
 </resources>

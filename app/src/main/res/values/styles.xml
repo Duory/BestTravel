@@ -2,10 +2,9 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="textInputStyle">@style/Widget.App.TextInputLayout</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Primary</item>
     </style>
 
-    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-    </style>
+    <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox" />
 
 </resources>
