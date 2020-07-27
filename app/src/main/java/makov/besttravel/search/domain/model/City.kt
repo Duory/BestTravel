@@ -1,7 +1,9 @@
 package makov.besttravel.search.domain.model
 
 data class City(
-    private val fullName: String,
-    private val latitude: Double,
-    private val longitude: Double
-)
+    val fullName: String,
+    val latitude: Double,
+    val longitude: Double
+) {
+    override fun toString() = fullName
+}

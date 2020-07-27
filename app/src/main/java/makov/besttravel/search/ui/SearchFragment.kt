@@ -4,16 +4,17 @@ import android.os.Bundle
 import android.view.View
 import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
-import makov.besttravel.global.tools.viewBinding
 import makov.besttravel.databinding.FragmentSearchBinding
+import makov.besttravel.global.tools.addOnTextChangedListener
+import makov.besttravel.global.tools.viewBinding
+import makov.besttravel.search.domain.model.City
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 import javax.inject.Provider
 
 @AndroidEntryPoint
-class SearchFragment : MvpAppCompatFragment(R.layout.fragment_search),
-    SearchView {
+class SearchFragment : MvpAppCompatFragment(R.layout.fragment_search), SearchView {
 
     @Inject
     lateinit var presenterProvider: Provider<SearchPresenter>
@@ -21,7 +22,28 @@ class SearchFragment : MvpAppCompatFragment(R.layout.fragment_search),
 
     private val binding by viewBinding(FragmentSearchBinding::bind)
 
+    private val fromAdapter by lazy(this::getAdapter)
+    private val toAdapter by lazy(this::getAdapter)
+
+    private fun getAdapter(): NoFilterCitiesArrayAdapter {
+        return NoFilterCitiesArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding.from.addOnTextChangedListener(presenter::onFromTextChanged)
+        binding.to.addOnTextChangedListener(presenter::onToTextChanged)
+        binding.from.setAdapter(fromAdapter)
+        binding.to.setAdapter(toAdapter)
+    }
+
+    override fun showFromSuggestions(suggestions: List<City>) {
+        fromAdapter.submitData(suggestions)
+    }
+
+    override fun showToSuggestions(suggestions: List<City>) {
+        toAdapter.submitData(suggestions)
     }
 }
