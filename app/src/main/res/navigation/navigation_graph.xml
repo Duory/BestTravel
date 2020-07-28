@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_graph"
-    app:startDestination="@id/searchFragment">
+    app:startDestination="@id/mainFragment">
 
     <fragment
-        android:id="@+id/searchFragment"
+        android:id="@+id/mainFragment"
         android:name="makov.besttravel.search.ui.main.MainFragment"
-        android:label="SearchFragment" >
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/requestProgressFragment"
             app:destination="@id/requestProgressFragment" />
+        <action
+            android:id="@+id/airportSearchFragment"
+            app:destination="@id/airportSearchFragment" />
     </fragment>
     <fragment
         android:id="@+id/requestProgressFragment"
         android:name="makov.besttravel.search.ui.requestprogress.RequestProgressFragment"
-        android:label="RequestProgressFragment" >
+        tools:layout="@layout/fragment_request_progress">
         <argument
             android:name="fromCity"
-            app:argType="makov.besttravel.search.domain.model.City" />
+            app:argType="makov.besttravel.search.domain.model.Airport" />
         <argument
             android:name="toCity"
-            app:argType="makov.besttravel.search.domain.model.City" />
+            app:argType="makov.besttravel.search.domain.model.Airport" />
+    </fragment>
+    <fragment
+        android:id="@+id/airportSearchFragment"
+        android:name="makov.besttravel.search.ui.search.AirportSearchFragment"
+        tools:layout="@layout/fragment_city_search" >
         <argument
-            android:name="fromiata"
-            app:argType="string"
-            app:nullable="true" />
-        <argument
-            android:name="toiata"
-            app:argType="string"
-            app:nullable="true" />
+            android:name="requestKey"
+            app:argType="string" />
     </fragment>
 </navigation>

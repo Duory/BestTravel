@@ -9,5 +9,5 @@ class SuggestionsInteractor @Inject constructor(
     private val repository: SuggestionsRepository
 ) {
 
-    suspend fun getCitySuggestions(searchString: String) = repository.getCitySuggestions(searchString)
+    suspend fun getCitySuggestions(searchString: String) = repository.getAirportsSuggestions(searchString)
 }

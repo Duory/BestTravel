@@ -1,7 +1,7 @@
 package makov.besttravel.search.data
 
-import makov.besttravel.search.data.model.CityMapper
-import makov.besttravel.search.domain.model.City
+import makov.besttravel.search.data.model.CityToAirportsMapper
+import makov.besttravel.search.domain.model.Airport
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -10,7 +10,10 @@ class SuggestionsRepository @Inject constructor(
     private val api: SuggestionsApi
 ) {
 
-    suspend fun getCitySuggestions(searchString: String): List<City> {
-        return api.getSuggestions(searchString, "ru").cities.map(CityMapper::map)
+    suspend fun getAirportsSuggestions(searchString: String): List<Airport> {
+        return api.getSuggestions(searchString, "ru")
+            .cities
+            .map { CityToAirportsMapper.map(it) }
+            .flatten()
     }
 }

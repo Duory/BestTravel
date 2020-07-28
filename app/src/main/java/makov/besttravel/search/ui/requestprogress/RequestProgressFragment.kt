@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
@@ -16,11 +17,10 @@ import com.google.android.gms.maps.model.*
 import makov.besttravel.R
 import makov.besttravel.global.tools.MarkerAnimation
 import makov.besttravel.global.tools.Spherical
-import moxy.MvpAppCompatFragment
 import kotlin.math.roundToInt
 
 
-class RequestProgressFragment : MvpAppCompatFragment(R.layout.fragment_request_progress) {
+class RequestProgressFragment : Fragment(R.layout.fragment_request_progress) {
 
     val args: RequestProgressFragmentArgs by navArgs()
 
@@ -55,30 +55,21 @@ class RequestProgressFragment : MvpAppCompatFragment(R.layout.fragment_request_p
                     resources.getDimensionPixelOffset(R.dimen.map_padding)
                 )
             )
-            map.moveCamera(CameraUpdateFactory.zoomOut())
 
             map.addMarker(
                 MarkerOptions()
                     .position(fromCityLatLng)
                     .anchor(0.5f, getMarkerAnchorPoint(fromCityLatLng, toCityLatLng))
                     .alpha(0.8f)
-                    .icon(
-                        BitmapDescriptorFactory.fromBitmap(
-                            getMarkerBitmap(
-                                args.fromiata ?: args.fromCity.city,
-                                args.fromiata != null
-                            )
-                        )
-                    )
+                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(args.fromCity.iata)))
             )
 
             val planeMarker = map.addMarker(
                 MarkerOptions()
                     .position(fromCityLatLng)
                     .anchor(0.5f, 0.5f)
-                    .icon(
-                        BitmapDescriptorFactory.fromResource(R.drawable.ic_plane)
-                    )
+                    .zIndex(1f)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_plane))
             )
 
             MarkerAnimation.animateMarkerTo(planeMarker, toCityLatLng, Spherical())
@@ -88,14 +79,7 @@ class RequestProgressFragment : MvpAppCompatFragment(R.layout.fragment_request_p
                     .position(toCityLatLng)
                     .anchor(0.5f, getMarkerAnchorPoint(toCityLatLng, fromCityLatLng))
                     .alpha(0.8f)
-                    .icon(
-                        BitmapDescriptorFactory.fromBitmap(
-                            getMarkerBitmap(
-                                args.toiata ?: args.toCity.city,
-                                args.toiata != null
-                            )
-                        )
-                    )
+                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(args.toCity.iata)))
             )
 
             map.addPolyline(
@@ -148,19 +132,19 @@ class RequestProgressFragment : MvpAppCompatFragment(R.layout.fragment_request_p
         mapView.onLowMemory()
     }
 
-    private fun getMarkerBitmap(markerTitle: String, isiata: Boolean): Bitmap {
+    private fun getMarkerBitmap(markerTitle: String): Bitmap {
         val textPaint = Paint().apply {
             color = Color.WHITE
-            textSize =
-                resources.getDimension(if (isiata) R.dimen.map_code_size else R.dimen.map_text_size)
+            textSize = resources.getDimension(R.dimen.map_code_size)
         }
         val textWidth = textPaint.measureText(markerTitle)
         val markerHeight = resources.getDimensionPixelOffset(R.dimen.map_marker_height)
-        val markerWidth = textWidth.roundToInt() + (resources.getDimensionPixelOffset(R.dimen.map_marker_horizontal_padding) * 2)
+        val markerWidth =
+            textWidth.roundToInt() + (resources.getDimensionPixelOffset(R.dimen.map_marker_horizontal_padding) * 2)
         val markerCornerRadius = markerHeight / 2f
 
         val shapeFillPaint = Paint().apply {
-            color = ResourcesCompat.getColor(resources, R.color.map_marker_color, null)
+            color = ResourcesCompat.getColor(resources, R.color.secondaryDarkColor, null)
         }
 
         val shapeStorkPaint = Paint().apply {
@@ -174,12 +158,12 @@ class RequestProgressFragment : MvpAppCompatFragment(R.layout.fragment_request_p
         val canvas = Canvas(bitmap)
 
         canvas.drawRoundRect(
-            4f, 4f, markerWidth -4f, markerHeight -4f,
+            4f, 4f, markerWidth - 4f, markerHeight - 4f,
             markerCornerRadius, markerCornerRadius,
             shapeFillPaint
         )
         canvas.drawRoundRect(
-            4f, 4f, markerWidth -4f, markerHeight -4f,
+            4f, 4f, markerWidth - 4f, markerHeight - 4f,
             markerCornerRadius, markerCornerRadius,
             shapeStorkPaint
         )

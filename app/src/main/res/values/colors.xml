@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="primaryColor">#ffe0b2</color>
+    <color name="primaryLightColor">#ffffe4</color>
+    <color name="primaryDarkColor">#cbae82</color>
+    <color name="secondaryColor">#b2ebf2</color>
+    <color name="secondaryLightColor">#e5ffff</color>
+    <color name="secondaryDarkColor">#81b9bf</color>
+    <color name="primaryTextColor">#000000</color>
+    <color name="secondaryTextColor">#000000</color>
 
     <color name="map_marker_color">#FFC107</color>
 </resources>

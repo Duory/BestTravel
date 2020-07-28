@@ -49,6 +49,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "androidx.core:core-ktx:$versions.core_ktx"
+    implementation "androidx.fragment:fragment-ktx:$versions.fragment_ktx"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
 
     // Material
@@ -64,6 +65,8 @@ dependencies {
     //    MVP pattern (Moxy)
     implementation "com.github.moxy-community.Moxy:moxy-androidx:$versions.moxy"
     implementation "com.github.moxy-community.Moxy:moxy-ktx:$versions.moxy"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
     kapt "com.github.moxy-community.Moxy:moxy-compiler:$versions.moxy"
 
     //    OkHttp
