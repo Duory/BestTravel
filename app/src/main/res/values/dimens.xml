@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="map_marker_height">48dp</dimen>
+    <dimen name="map_marker_horizontal_padding">16dp</dimen>
+    <dimen name="map_padding">48dp</dimen>
+    <dimen name="map_code_size">24dp</dimen>
+    <dimen name="map_text_size">16dp</dimen>
+</resources>

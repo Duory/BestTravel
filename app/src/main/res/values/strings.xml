@@ -6,4 +6,6 @@
     <string name="search_to">Куда</string>
     <string name="search_action">Найти билеты</string>
     <string name="search_screen_title">Поиск авиабилетов</string>
+    <string name="city_from_helper">Выберит город отправления списка</string>
+    <string name="to_city_helper">Выберите город прибытия из списка</string>
 </resources>

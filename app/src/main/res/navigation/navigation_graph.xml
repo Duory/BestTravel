@@ -6,6 +6,29 @@
 
     <fragment
         android:id="@+id/searchFragment"
-        android:name="makov.besttravel.search.ui.SearchFragment"
-        android:label="SearchFragment" />
+        android:name="makov.besttravel.search.ui.main.MainFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/requestProgressFragment"
+            app:destination="@id/requestProgressFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/requestProgressFragment"
+        android:name="makov.besttravel.search.ui.requestprogress.RequestProgressFragment"
+        android:label="RequestProgressFragment" >
+        <argument
+            android:name="fromCity"
+            app:argType="makov.besttravel.search.domain.model.City" />
+        <argument
+            android:name="toCity"
+            app:argType="makov.besttravel.search.domain.model.City" />
+        <argument
+            android:name="fromiata"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="toiata"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

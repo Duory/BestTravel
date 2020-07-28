@@ -1,4 +1,4 @@
-package makov.besttravel.search.ui
+package makov.besttravel.search.ui.main
 
 import android.content.Context
 import android.widget.ArrayAdapter
