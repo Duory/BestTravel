@@ -2,10 +2,16 @@
     <string name="app_name">BestTravel</string>
 
     <string name="error_default_msg">Нет доступа к сервису, попробуйте позже.</string>
-    <string name="search_from">Откуда</string>
-    <string name="search_to">Куда</string>
+    <string name="search_from">Выберите аэрапорт отправления</string>
+    <string name="search_to">Выберите аэрапорт прибытия</string>
     <string name="search_action">Найти билеты</string>
     <string name="search_screen_title">Поиск авиабилетов</string>
+    <string name="search_hint">Город, страна или аэропорт</string>
+    <string name="empty_text">Ничего не найдено</string>
     <string name="city_from_helper">Выберит город отправления списка</string>
     <string name="to_city_helper">Выберите город прибытия из списка</string>
+    <string name="route_type_geodesic">Геодезическая прямая</string>
+    <string name="route_type_cubic_bezier">Кривая Безье</string>
+    <string name="error_empty_from">Выберите аэропорт отправления</string>
+    <string name="error_empty_to">Выберите аэрапорт прибытия</string>
 </resources>

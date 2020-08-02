@@ -26,11 +26,15 @@
         <argument
             android:name="toCity"
             app:argType="makov.besttravel.search.domain.model.Airport" />
+        <argument
+            android:name="routeType"
+            android:defaultValue="GEODESIC"
+            app:argType="makov.besttravel.search.domain.model.RouteType" />
     </fragment>
     <fragment
         android:id="@+id/airportSearchFragment"
         android:name="makov.besttravel.search.ui.search.AirportSearchFragment"
-        tools:layout="@layout/fragment_city_search" >
+        tools:layout="@layout/fragment_airport_search">
         <argument
             android:name="requestKey"
             app:argType="string" />

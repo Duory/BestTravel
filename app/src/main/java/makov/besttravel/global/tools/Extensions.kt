@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.CompoundButton
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 
@@ -30,5 +31,13 @@ fun Activity.openKeyboard(view: View) {
             view,
             InputMethodManager.SHOW_IMPLICIT
         )
+    }
+}
+
+fun CompoundButton.addOnCheckedListener(listener: () -> Unit) {
+    setOnCheckedChangeListener { _, isChecked ->
+        if (isChecked) {
+            listener()
+        }
     }
 }

@@ -49,10 +49,10 @@
         android:id="@+id/toLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginTop="2dp"
         app:cardElevation="4dp"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintBottom_toTopOf="@id/search"
+        app:layout_constraintBottom_toTopOf="@id/routeType"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/fromLayout">
@@ -86,16 +86,42 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <RadioGroup
+        android:id="@+id/routeType"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:checkedButton="@id/geodesic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toLayout"
+        app:layout_constraintBottom_toTopOf="@id/search">
+
+        <RadioButton
+            android:id="@+id/geodesic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/route_type_geodesic"/>
+
+        <RadioButton
+            android:id="@+id/cubicBezier"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/route_type_cubic_bezier"/>
+    </RadioGroup>
+
     <Button
         android:id="@+id/search"
+        android:enabled="false"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_marginTop="8dp"
         android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="8dp"
         android:text="@string/search_action"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toLayout" />
+        app:layout_constraintTop_toBottomOf="@id/routeType" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

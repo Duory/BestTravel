@@ -7,8 +7,10 @@ import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
 import makov.besttravel.databinding.FragmentMainBinding
+import makov.besttravel.global.tools.addOnCheckedListener
 import makov.besttravel.global.tools.viewBinding
 import makov.besttravel.search.domain.model.Airport
+import makov.besttravel.search.domain.model.RouteType
 import makov.besttravel.search.ui.search.AirportSearchFragment
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
@@ -29,11 +31,21 @@ class MainFragment : MvpAppCompatFragment(R.layout.fragment_main),
         binding.fromLayout.setOnClickListener { navigateToSearchAirport(AirportSearchFragment.FROM_REQUEST_KEY) }
         binding.toLayout.setOnClickListener { navigateToSearchAirport(AirportSearchFragment.TO_REQUEST_KEY) }
         binding.search.setOnClickListener { presenter.onSearchClicked() }
+        binding.geodesic.addOnCheckedListener(presenter::onGeodesicChecked)
+        binding.cubicBezier.addOnCheckedListener(presenter::onCubicBezierChecked)
     }
 
-    override fun navigateToSearchStart(fromAirport: Airport, toAirport: Airport) {
+    override fun navigateToSearchStart(
+        fromAirport: Airport,
+        toAirport: Airport,
+        selectedRouteType: RouteType
+    ) {
         findNavController().navigate(
-            MainFragmentDirections.requestProgressFragment(fromAirport, toAirport)
+            MainFragmentDirections.requestProgressFragment(
+                fromAirport,
+                toAirport,
+                selectedRouteType
+            )
         )
     }
 
@@ -45,6 +57,10 @@ class MainFragment : MvpAppCompatFragment(R.layout.fragment_main),
     override fun showToAirport(airport: Airport) {
         binding.toName.text = airport.city
         binding.toIdata.text = airport.iata
+    }
+
+    override fun enableFindButton(isEnabled: Boolean) {
+        binding.search.isEnabled = isEnabled
     }
 
     private fun navigateToSearchAirport(requestKey: String) {

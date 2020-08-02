@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import makov.besttravel.R
-import makov.besttravel.databinding.FragmentCitySearchBinding
+import makov.besttravel.databinding.FragmentAirportSearchBinding
 import makov.besttravel.global.tools.addOnTextChangedListener
 import makov.besttravel.global.tools.openKeyboard
 import makov.besttravel.global.tools.viewBinding
@@ -21,17 +22,18 @@ import javax.inject.Inject
 import javax.inject.Provider
 
 @AndroidEntryPoint
-class AirportSearchFragment : MvpAppCompatFragment(R.layout.fragment_city_search), CitySearchView {
+class AirportSearchFragment : MvpAppCompatFragment(R.layout.fragment_airport_search),
+    AirportSearchView {
 
     val args: AirportSearchFragmentArgs by navArgs()
 
     @Inject
-    lateinit var presenterProvider: Provider<CitySearchPresenter>
+    lateinit var presenterProvider: Provider<AirportSearchPresenter>
     private val presenter by moxyPresenter { presenterProvider.get() }
 
-    private val binding by viewBinding(FragmentCitySearchBinding::bind)
+    private val binding by viewBinding(FragmentAirportSearchBinding::bind)
 
-    private val adapter by lazy { AirportRecyclerViewAdapter {sendResult(it)} }
+    private val adapter by lazy { AirportRecyclerViewAdapter { sendResult(it) } }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.list.adapter = adapter
@@ -39,12 +41,18 @@ class AirportSearchFragment : MvpAppCompatFragment(R.layout.fragment_city_search
         binding.search.addOnTextChangedListener { presenter.searchForText(it) }
     }
 
-    override fun showError(@StringRes stringRes: Int) {
-        Snackbar.make(requireView(), stringRes, Snackbar.LENGTH_LONG)
-            .show()
+    override fun showProgress(inProgress: Boolean) {
+        binding.progressCircular.isVisible = inProgress
     }
 
-    override fun showSuggestions(suggestions: List<Airport>) = adapter.submitList(suggestions)
+    override fun showError(@StringRes errorResId: Int) {
+        Snackbar.make(requireView(), errorResId, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun showSuggestions(suggestions: List<Airport>) {
+        adapter.submitList(suggestions)
+        binding.emptyView.isVisible = suggestions.isEmpty()
+    }
 
     private fun sendResult(airport: Airport) {
         setFragmentResult(args.requestKey, bundleOf(RESULT_AIRPORT_KEY to airport))

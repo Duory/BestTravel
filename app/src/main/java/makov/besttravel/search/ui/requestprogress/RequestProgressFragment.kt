@@ -1,5 +1,6 @@
 package makov.besttravel.search.ui.requestprogress
 
+import android.animation.ValueAnimator
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -12,94 +13,215 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
 import makov.besttravel.R
-import makov.besttravel.global.tools.MarkerAnimation
+import makov.besttravel.global.tools.CubicBezier
+import makov.besttravel.global.tools.LatLngInterpolator
 import makov.besttravel.global.tools.Spherical
+import makov.besttravel.global.tools.SphericalUtils
+import makov.besttravel.search.domain.model.RouteType
 import kotlin.math.roundToInt
 
 
-class RequestProgressFragment : Fragment(R.layout.fragment_request_progress) {
+class RequestProgressFragment : Fragment() {
 
     val args: RequestProgressFragmentArgs by navArgs()
 
     private lateinit var mapView: MapView
 
+    private val valueAnimator = ValueAnimator()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)!!
+    ): View {
+        return inflater.inflate(R.layout.fragment_request_progress, container, false).also {
+            mapView = it.findViewById(R.id.mapView)
+            mapView.onCreate(savedInstanceState)
 
-        mapView = rootView.findViewById(R.id.mapView)
-        mapView.onCreate(savedInstanceState)
+            mapView.getMapAsync { map ->
+                mapView.isClickable = false
+                map.setMaxZoomPreference(3f)
+                map.uiSettings.isRotateGesturesEnabled = false
 
-        mapView.getMapAsync { map ->
-            mapView.isClickable = false
+                val fromLatLng = LatLng(args.fromCity.latitude, args.fromCity.longitude)
+                val toLatLng = LatLng(args.toCity.latitude, args.toCity.longitude)
 
-            map.setMaxZoomPreference(3f)
+                val interpolator = when (args.routeType) {
+                    RouteType.GEODESIC -> Spherical()
+                    RouteType.CUBIC_BEZIER -> CubicBezier()
+                }
 
-            val fromCityLatLng = LatLng(args.fromCity.latitude, args.fromCity.longitude)
-            val toCityLatLng = LatLng(args.toCity.latitude, args.toCity.longitude)
+                // При смене конфигурации положение камеры сохраняется
+                if (savedInstanceState == null) {
+                    setupCameraBounds(fromLatLng, toLatLng, map)
+                }
 
-            map.moveCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                    LatLngBounds.Builder()
-                        .include(fromCityLatLng)
-                        .include(toCityLatLng)
-                        .build(),
-                    // Для Lite Mode этот параметр не учитывается, что приводит к тому, что иногда маркер заступает за границу карты
-                    // Если использовать карту не в Lite mode, то всё окей, но она дольше подгружается
-                    resources.getDimensionPixelOffset(R.dimen.map_padding)
+                addFromToMarkers(fromLatLng, toLatLng, args.fromCity.iata, args.toCity.iata, map)
+                addRoute(fromLatLng, toLatLng, map, interpolator)
+
+                val planeMarker = getPlaneMarkerAtStartPoint(fromLatLng, map)
+                val savedAnimationFraction = savedInstanceState?.getFloat(SAVED_ANIMATION_FRACTION)
+                animateMarkerTo(
+                    valueAnimator,
+                    savedAnimationFraction,
+                    planeMarker,
+                    toLatLng,
+                    interpolator
                 )
-            )
-
-            map.addMarker(
-                MarkerOptions()
-                    .position(fromCityLatLng)
-                    .anchor(0.5f, getMarkerAnchorPoint(fromCityLatLng, toCityLatLng))
-                    .alpha(0.8f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(args.fromCity.iata)))
-            )
-
-            val planeMarker = map.addMarker(
-                MarkerOptions()
-                    .position(fromCityLatLng)
-                    .anchor(0.5f, 0.5f)
-                    .zIndex(1f)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_plane))
-            )
-
-            MarkerAnimation.animateMarkerTo(planeMarker, toCityLatLng, Spherical())
-
-            map.addMarker(
-                MarkerOptions()
-                    .position(toCityLatLng)
-                    .anchor(0.5f, getMarkerAnchorPoint(toCityLatLng, fromCityLatLng))
-                    .alpha(0.8f)
-                    .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(args.toCity.iata)))
-            )
-
-            map.addPolyline(
-                PolylineOptions()
-                    .add(fromCityLatLng, toCityLatLng)
-                    .geodesic(true)
-                    .width(5f)
-                    .color(Color.RED)
-            )
+            }
         }
-
-        return rootView
     }
 
-    private fun getMarkerAnchorPoint(first: LatLng, second: LatLng): Float {
-        return if (first.latitude > second.latitude) {
-            1f
-        } else {
-            0f
+    private fun setupCameraBounds(fromLatLng: LatLng, toLatLng: LatLng, map: GoogleMap) {
+        map.moveCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                LatLngBounds.Builder()
+                    .include(fromLatLng)
+                    .include(toLatLng)
+                    .build(),
+                resources.getDimensionPixelOffset(R.dimen.map_padding)
+            )
+        )
+    }
+
+    private fun addFromToMarkers(
+        from: LatLng, to: LatLng,
+        fromIata: String, toIata: String,
+        map: GoogleMap
+    ) {
+        map.addMarker(
+            MarkerOptions()
+                .position(from)
+                .anchor(0.5f, 0.5f)
+                .alpha(0.8f)
+                .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(fromIata)))
+        )
+        map.addMarker(
+            MarkerOptions()
+                .position(to)
+                .anchor(0.5f, 0.5f)
+                .alpha(0.8f)
+                .icon(BitmapDescriptorFactory.fromBitmap(getMarkerBitmap(toIata)))
+        )
+    }
+
+    private fun getMarkerBitmap(markerTitle: String): Bitmap {
+        val textPaint = Paint().apply {
+            color = Color.WHITE
+            textSize = resources.getDimension(R.dimen.map_code_size)
         }
+        val textWidth = textPaint.measureText(markerTitle)
+        val markerHeight = resources.getDimensionPixelOffset(R.dimen.map_marker_height)
+        val markerWidth =
+            textWidth.roundToInt() + (resources.getDimensionPixelOffset(R.dimen.map_marker_horizontal_padding) * 2)
+        val markerCornerRadius = markerHeight / 2f
+
+        val shapeFillPaint = Paint().apply {
+            color = ResourcesCompat.getColor(resources, R.color.secondaryDarkColor, null)
+        }
+
+        val shapeStorkPaint = Paint().apply {
+            color = Color.WHITE
+            style = Paint.Style.STROKE
+            strokeWidth = 8f
+            strokeCap = Paint.Cap.ROUND
+        }
+
+        return Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888).also {
+            val canvas = Canvas(it)
+
+            val extraPadding = shapeStorkPaint.strokeWidth / 2
+
+            canvas.drawRoundRect(
+                extraPadding, extraPadding, markerWidth - extraPadding, markerHeight - extraPadding,
+                markerCornerRadius, markerCornerRadius,
+                shapeFillPaint
+            )
+            canvas.drawRoundRect(
+                extraPadding, extraPadding, markerWidth - extraPadding, markerHeight - extraPadding,
+                markerCornerRadius, markerCornerRadius,
+                shapeStorkPaint
+            )
+
+            val textHeight = textPaint.fontMetrics.run { this.descent - this.ascent }
+            canvas.drawText(
+                markerTitle,
+                (markerWidth - textWidth) / 2,
+                (markerHeight / 2f) + (textHeight / 3),
+                textPaint
+            )
+        }
+    }
+
+    private fun addRoute(
+        from: LatLng,
+        to: LatLng,
+        map: GoogleMap,
+        latLngInterpolator: LatLngInterpolator
+    ) {
+        map.addPolyline(
+            PolylineOptions()
+                .addAll(getRoutePoints(from, to, latLngInterpolator))
+                .width(5f)
+                .color(Color.RED)
+        )
+    }
+
+    private fun getRoutePoints(
+        from: LatLng,
+        to: LatLng,
+        latLngInterpolator: LatLngInterpolator
+    ): List<LatLng> {
+        return (0..100).map {
+            latLngInterpolator.interpolate(from, to, it * 0.01)
+        }
+    }
+
+    private fun getPlaneMarkerAtStartPoint(from: LatLng, map: GoogleMap): Marker {
+        return map.addMarker(
+            MarkerOptions()
+                .position(from)
+                .anchor(0.5f, 0.5f)
+                .zIndex(1f)
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_plane))
+        )
+    }
+
+    private fun animateMarkerTo(
+        valueAnimator: ValueAnimator,
+        startFractionValue: Float?,
+        marker: Marker,
+        finalPosition: LatLng,
+        latLngInterpolator: LatLngInterpolator
+    ) {
+        val startPosition = marker.position
+        marker.rotation = SphericalUtils.computeHeading(startPosition, finalPosition).toFloat()
+        valueAnimator.addUpdateListener { animation ->
+            val fraction = animation.animatedFraction
+            val newPosition =
+                latLngInterpolator.interpolate(startPosition, finalPosition, fraction.toDouble())
+            marker.rotation = SphericalUtils.computeHeading(marker.position, newPosition).toFloat()
+            marker.position = newPosition
+
+        }
+        valueAnimator.setFloatValues(0f, 1f)
+        valueAnimator.duration = 8000
+
+        // Чтобы восстановить анимацию при смене конфигурации. Это, конечно, не покрывает все кейсы,
+        // но решение расширяемое
+        if (startFractionValue != null) {
+            valueAnimator.setCurrentFraction(startFractionValue)
+        }
+        valueAnimator.start()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        mapView.onSaveInstanceState(outState)
+        outState.putFloat(SAVED_ANIMATION_FRACTION, valueAnimator.animatedFraction)
     }
 
     override fun onStart() {
@@ -132,49 +254,7 @@ class RequestProgressFragment : Fragment(R.layout.fragment_request_progress) {
         mapView.onLowMemory()
     }
 
-    private fun getMarkerBitmap(markerTitle: String): Bitmap {
-        val textPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = resources.getDimension(R.dimen.map_code_size)
-        }
-        val textWidth = textPaint.measureText(markerTitle)
-        val markerHeight = resources.getDimensionPixelOffset(R.dimen.map_marker_height)
-        val markerWidth =
-            textWidth.roundToInt() + (resources.getDimensionPixelOffset(R.dimen.map_marker_horizontal_padding) * 2)
-        val markerCornerRadius = markerHeight / 2f
-
-        val shapeFillPaint = Paint().apply {
-            color = ResourcesCompat.getColor(resources, R.color.secondaryDarkColor, null)
-        }
-
-        val shapeStorkPaint = Paint().apply {
-            color = Color.WHITE
-            style = Paint.Style.STROKE
-            strokeWidth = 8f
-            strokeCap = Paint.Cap.ROUND
-        }
-
-        val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-
-        canvas.drawRoundRect(
-            4f, 4f, markerWidth - 4f, markerHeight - 4f,
-            markerCornerRadius, markerCornerRadius,
-            shapeFillPaint
-        )
-        canvas.drawRoundRect(
-            4f, 4f, markerWidth - 4f, markerHeight - 4f,
-            markerCornerRadius, markerCornerRadius,
-            shapeStorkPaint
-        )
-
-        val textHeight = textPaint.fontMetrics.run { this.descent - this.ascent }
-        canvas.drawText(
-            markerTitle,
-            (markerWidth - textWidth) / 2,
-            (markerHeight / 2f) + (textHeight / 3),
-            textPaint
-        )
-        return bitmap
+    companion object {
+        private const val SAVED_ANIMATION_FRACTION = "SAVED_ANIMATION_FRACTION"
     }
 }

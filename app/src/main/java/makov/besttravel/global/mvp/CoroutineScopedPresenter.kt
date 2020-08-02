@@ -1,4 +1,4 @@
-package makov.besttravel.global
+package makov.besttravel.global.mvp
 
 import androidx.annotation.CallSuper
 import kotlinx.coroutines.MainScope
