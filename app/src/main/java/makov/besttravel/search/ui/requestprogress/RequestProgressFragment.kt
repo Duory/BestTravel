@@ -31,7 +31,7 @@ class RequestProgressFragment : Fragment() {
 
     private lateinit var mapView: MapView
 
-    private val valueAnimator = ValueAnimator()
+    private val valueAnimator by lazy(::ValueAnimator)
 
     override fun onCreateView(
         inflater: LayoutInflater,
