@@ -84,10 +84,10 @@ class CubicBezier : LatLngInterpolator {
         val a3 = sqrt(u * u + v * v)
         val alp3 = Math.PI - angle - angle
         val a2 = a3 * sin(angle) / sin(alp3)
-        val RHS1 = x1 * u + y1 * v + a2 * a3 * cos(angle)
-        val RHS2 = y2 * u - x2 * v + a2 * a3 * sin(angle)
-        val x3 = (1 / (a3 * a3)) * (u * RHS1 - v * RHS2)
-        val y3 = (1 / (a3 * a3)) * (v * RHS1 + u * RHS2)
+        val rhs1 = x1 * u + y1 * v + a2 * a3 * cos(angle)
+        val rhs2 = y2 * u - x2 * v + a2 * a3 * sin(angle)
+        val x3 = (1 / (a3 * a3)) * (u * rhs1 - v * rhs2)
+        val y3 = (1 / (a3 * a3)) * (v * rhs1 + u * rhs2)
         return LatLng(x3, y3)
     }
 
