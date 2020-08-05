@@ -9,7 +9,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.res.ResourcesCompat.getColor
+import androidx.core.content.res.ResourcesCompat.getFloat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -44,7 +45,6 @@ class RequestProgressFragment : Fragment() {
 
             mapView.getMapAsync { map ->
                 mapView.isClickable = false
-                map.setMaxZoomPreference(3f)
                 map.uiSettings.isRotateGesturesEnabled = false
 
                 val fromLatLng = LatLng(args.fromCity.latitude, args.fromCity.longitude)
@@ -121,13 +121,13 @@ class RequestProgressFragment : Fragment() {
         val markerCornerRadius = markerHeight / 2f
 
         val shapeFillPaint = Paint().apply {
-            color = ResourcesCompat.getColor(resources, R.color.secondaryDarkColor, null)
+            color = getColor(resources, R.color.map_marker_color, null)
         }
 
         val shapeStorkPaint = Paint().apply {
             color = Color.WHITE
             style = Paint.Style.STROKE
-            strokeWidth = 8f
+            strokeWidth = getFloat(resources, R.dimen.map_waypoint_edging_width)
             strokeCap = Paint.Cap.ROUND
         }
 
@@ -166,8 +166,9 @@ class RequestProgressFragment : Fragment() {
         map.addPolyline(
             PolylineOptions()
                 .addAll(getRoutePoints(from, to, latLngInterpolator))
-                .width(5f)
-                .color(Color.RED)
+                .width(getFloat(resources, R.dimen.map_route_dot_size))
+                .pattern(listOf(Dot(), Gap(getFloat(resources, R.dimen.map_route_gap_size))))
+                .color(getColor(resources, R.color.map_route_color, null))
         )
     }
 

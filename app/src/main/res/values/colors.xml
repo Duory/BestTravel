@@ -9,5 +9,6 @@
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
 
-    <color name="map_marker_color">#FFC107</color>
+    <color name="map_marker_color">#aaf5ce5d</color>
+    <color name="map_route_color">#993C3E36</color>
 </resources>

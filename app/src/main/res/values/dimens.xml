@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="map_marker_height">48dp</dimen>
+    <dimen name="map_marker_height">42dp</dimen>
     <dimen name="map_marker_horizontal_padding">16dp</dimen>
-    <dimen name="map_padding">48dp</dimen>
+    <dimen name="map_padding">38dp</dimen>
     <dimen name="map_code_size">24dp</dimen>
     <dimen name="map_text_size">16dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+
+    <item name="map_route_dot_size" format="float" type="dimen">20.0</item>
+    <item name="map_route_gap_size" format="float" type="dimen">15.0</item>
+    <item name="map_waypoint_edging_width" format="float" type="dimen">4.0</item>
 </resources>
