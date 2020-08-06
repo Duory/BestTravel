@@ -27,6 +27,8 @@ class MainFragment : MvpAppCompatFragment(R.layout.fragment_main),
 
     private val binding by viewBinding(FragmentMainBinding::bind)
 
+    private var inProgressRequest: String? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.fromLayout.setOnClickListener { navigateToSearchAirport(AirportSearchFragment.FROM_REQUEST_KEY) }
         binding.toLayout.setOnClickListener { navigateToSearchAirport(AirportSearchFragment.TO_REQUEST_KEY) }
@@ -64,7 +66,16 @@ class MainFragment : MvpAppCompatFragment(R.layout.fragment_main),
     }
 
     private fun navigateToSearchAirport(requestKey: String) {
+        setupFragmentResultListener(requestKey)
+        findNavController().navigate(MainFragmentDirections.airportSearchFragment(requestKey))
+    }
+
+    private fun setupFragmentResultListener(requestKey: String) {
+        // Так как это API ещё в альфе - есть проблема с сохранением слушателя при смене конфигурации
+        // Предполагаю, что к релизу это будет исправлено, но пока обрабатываем вручную
+        inProgressRequest = requestKey
         setFragmentResultListener(requestKey) { responseRequestKey, bundle ->
+            inProgressRequest = null
             bundle.getParcelable<Airport>(AirportSearchFragment.RESULT_AIRPORT_KEY)?.let {
                 when (responseRequestKey) {
                     AirportSearchFragment.FROM_REQUEST_KEY -> presenter.onFromAirportSelected(it)
@@ -72,6 +83,23 @@ class MainFragment : MvpAppCompatFragment(R.layout.fragment_main),
                 }
             }
         }
-        findNavController().navigate(MainFragmentDirections.airportSearchFragment(requestKey))
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (inProgressRequest != null) {
+            outState.putString(IN_PROGRESS_REQUEST_KEY, inProgressRequest)
+        }
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        if (savedInstanceState?.containsKey(IN_PROGRESS_REQUEST_KEY) == true) {
+            setupFragmentResultListener(savedInstanceState.getString(IN_PROGRESS_REQUEST_KEY)!!)
+        }
+        super.onViewStateRestored(savedInstanceState)
+    }
+
+    companion object {
+        private const val IN_PROGRESS_REQUEST_KEY = "IN_PROGRESS_REQUEST_KEY"
     }
 }
