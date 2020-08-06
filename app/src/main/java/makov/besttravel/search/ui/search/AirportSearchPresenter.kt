@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import makov.besttravel.R
 import makov.besttravel.global.mvp.CoroutineScopedPresenter
 import makov.besttravel.search.domain.SuggestionsInteractor
-import makov.besttravel.search.domain.model.Airport
 import javax.inject.Inject
 
 class AirportSearchPresenter @Inject constructor(
@@ -18,20 +17,21 @@ class AirportSearchPresenter @Inject constructor(
 
     fun searchForText(newText: String) {
         searchJob?.cancel()
-        searchJob = startSuggestionsJob(newText, viewState::showSuggestions)
+        searchJob = startSuggestionsJob(newText)
     }
 
-    private fun startSuggestionsJob(searchText: String, success: (List<Airport>) -> Unit): Job {
+    private fun startSuggestionsJob(searchText: String): Job {
         return presenterScope.launch {
-            kotlin.runCatching {
+            runCatching {
                 delay(SEARCH_DELAY_MS)
                 viewState.showProgress(true)
-                success(interactor.getCitySuggestions(searchText))
+                viewState.showSuggestions(interactor.getCitySuggestions(searchText))
                 viewState.showProgress(false)
             }.onFailure {
                 if (it !is CancellationException) {
                     viewState.showError(R.string.error_default_msg)
                 }
+                viewState.showProgress(false)
             }
         }
     }
