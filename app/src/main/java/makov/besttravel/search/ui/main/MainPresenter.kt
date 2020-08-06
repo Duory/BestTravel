@@ -31,7 +31,11 @@ class MainPresenter @Inject constructor() : CoroutineScopedPresenter<MainView>()
     }
 
     private fun updateFindButtonState() {
-        viewState.enableFindButton(selectedFromAirport != null && selectedToAirport != null)
+        viewState.enableFindButton(
+            selectedFromAirport != null
+                    && selectedToAirport != null
+                    && selectedToAirport != selectedToAirport
+        )
     }
 
     fun onGeodesicChecked() {
